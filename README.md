@@ -1,7 +1,7 @@
 # github-email
 
-Retrieve a GitHub user's email even if it's not public. 
-Pulls info from Github user, NPM, activity commits, owned repo commit activity.
+This script retrieves a user's email address from various sources,
+including: GitHub, GitHub commits, GitHub repository activity, and NPM.
 
 ![image](screenshot.png)
 
@@ -29,15 +29,16 @@ Install the script for the local account as follows:
 
 ```sh
 mkdir -p $HOME/bin
-wget https://raw.githubusercontent.com/paulirish/github-email/master/github-email.sh -O $HOME/bin/github-email
-chmod +x $HOME/bin/github-email
+cd $HOME/bin
+wget https://raw.githubusercontent.com/paulirish/github-email/master/github-email.sh
+chmod +x github-email.sh
 ```
 
 # Authenication Token
 
-If the `GITHUB_TOKEN` environment variable is not set, the script will
-inform the user to generate an authenicated API token and use it. Provide an
-[authenticated API](https://git.io/vxctz) request as follows:
+If the `GITHUB_TOKEN` environment variable is not set, the script will ask
+the user to generate an authenicated API token and use it. Generate an
+[authenticated API](https://git.io/vxctz) token as follows:
 
 1. Visit https://github.com/settings/tokens/new?description=github-email
 1. Click __Generate Token__.
@@ -46,12 +47,4 @@ inform the user to generate an authenicated API token and use it. Provide an
 1. Follow the instructions.
 
 This will save a copy of the token in `$HOME/.ghtoken`.
-
-# Usage
-
-Example usages include:
-
-```sh
-github-email user 
-```
 
