@@ -33,15 +33,17 @@ wget https://raw.githubusercontent.com/paulirish/github-email/master/github-emai
 chmod +x $HOME/bin/github-email
 ```
 
-# Token
+# Authenication Token
 
-Provide an [authenticated API](https://git.io/vxctz) request to retrieve
-an email as follows:
+If the `GITHUB_TOKEN` environment variable is not set, the script will
+inform the user to generate an authenicated API token and use it. Provide an
+[authenticated API](https://git.io/vxctz) request as follows:
 
 1. Visit https://github.com/settings/tokens/new?description=github-email
 1. Click __Generate Token__.
 1. Copy the token.
-1. Run: `github-email -t {token}`
+1. Run the script.
+1. Follow the instructions.
 
 This will save a copy of the token in `$HOME/.ghtoken`.
 
