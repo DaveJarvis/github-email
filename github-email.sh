@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # -----------------------------------------------------------------------------
 # Retrieve a GitHub user's email address
 #
@@ -79,6 +79,7 @@ main() {
     ARG_QUIET=-s
 	fi
 
+  # Command to run for fetching documents via HTTP REST API calls
   CMD="curl $ARG_QUIET"
 
   # Force token usage
@@ -89,7 +90,8 @@ main() {
     exit 1
   else
 		heading 'GitHub'
-    $CMD "$API_GITHUB/users/$ARG_USERNAME?access_token=$ARG_GITHUB_TOKEN" \
+    PARAM_GITHUB_TOKEN="access_token=$ARG_GITHUB_TOKEN"
+    $CMD "$API_GITHUB/users/$ARG_USERNAME?$PARAM_GITHUB_TOKEN" \
       | sed -nE 's#^.*"email": "([^"]+)",.*$#\1#p'
   fi
 
@@ -101,20 +103,20 @@ main() {
   fi
 
   heading 'Recent Commits'
-  $CMD "$API_GITHUB/users/$ARG_USERNAME/events" \
+  $CMD "$API_GITHUB/users/$ARG_USERNAME/events?$PARAM_GITHUB_TOKEN" \
     | sed -nE 's#^.*"(email)": "([^"]+)",.*$#\2#p' \
     | sort -u
 
   heading 'Recent Repository Activity'
   if [ -z "$ARG_REPOSITORY" ]; then
     # Get first repository if not specified
-    ARG_REPOSITORY="$($CMD "$API_GITHUB/users/$ARG_USERNAME/repos?type=owner&sort=updated" \
+    ARG_REPOSITORY="$($CMD "$API_GITHUB/users/$ARG_USERNAME/repos?type=owner&sort=updated&$PARAM_GITHUB_TOKEN" \
       | sed -nE 's#^.*"name": "([^"]+)",.*$#\1#p' \
       | head -n1)"
   fi
-
+  
   # Find all commits against the repository
-  $CMD "$API_GITHUB/repos/$ARG_USERNAME/$ARG_REPOSITORY/commits" \
+  $CMD "$API_GITHUB/repos/$ARG_USERNAME/$ARG_REPOSITORY/commits?$PARAM_GITHUB_TOKEN" \
     | sed -nE 's#^.*"(email|name)": "([^"]+)",.*$#\2#p'  \
     | pr -2 -at \
     | sort -u
