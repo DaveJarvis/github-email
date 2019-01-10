@@ -77,7 +77,7 @@ main() {
   # Suppress printing curl's output
   if [ "$ARG_QUIET" = true ]; then
     ARG_QUIET=-s
-	fi
+  fi
 
   # Command to run for fetching documents via HTTP REST API calls
   CMD="curl $ARG_QUIET"
@@ -85,11 +85,11 @@ main() {
   # Force token usage
   if [ -z "$ARG_GITHUB_TOKEN" ]; then
     warning "When run for the first time, provide a GitHub API token using:\n"
-		warning "    $SCRIPT_NAME -u username -t [TOKEN]\n"
+    warning "    $SCRIPT_NAME -u username -t [TOKEN]\n"
     warning "See README.md for instructions on generating a token."
     exit 1
   else
-		heading 'GitHub'
+    heading 'GitHub'
     PARAM_GITHUB_TOKEN="access_token=$ARG_GITHUB_TOKEN"
     $CMD "$API_GITHUB/users/$ARG_USERNAME?$PARAM_GITHUB_TOKEN" \
       | sed -nE 's#^.*"email": "([^"]+)",.*$#\1#p'
@@ -138,7 +138,7 @@ parse_commandline() {
       ;;
       -h|-\?|--help)
       ARG_HELP="true"
-			shift
+      shift
       ;;
       -q|--quiet)
       ARG_QUIET="$2"
@@ -167,9 +167,9 @@ parse_commandline() {
 }
 
 show_usage() {
-	printf "Usage: $SCRIPT_NAME -u username " >&2
+  printf "Usage: $SCRIPT_NAME -u username " >&2
   printf "[-r repository] [-t token] [-q false]\n" >&2
-	exit 1
+  exit 1
 }
 
 # -----------------------------------------------------------------------------
