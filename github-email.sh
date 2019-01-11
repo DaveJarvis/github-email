@@ -88,12 +88,13 @@ main() {
     warning "    $SCRIPT_NAME -u username -t [TOKEN]\n"
     warning "See README.md for instructions on generating a token."
     exit 1
-  else
-    heading 'GitHub'
-    PARAM_GITHUB_TOKEN="access_token=$ARG_GITHUB_TOKEN"
-    $CMD "$API_GITHUB/users/$ARG_USERNAME?$PARAM_GITHUB_TOKEN" \
-      | sed -nE 's#^.*"email": "([^"]+)",.*$#\1#p'
   fi
+
+  PARAM_GITHUB_TOKEN="access_token=$ARG_GITHUB_TOKEN"
+
+  heading 'GitHub'
+  $CMD "$API_GITHUB/users/$ARG_USERNAME?$PARAM_GITHUB_TOKEN" \
+    | sed -nE 's#^.*"email": "([^"]+)",.*$#\1#p'
 
   heading 'npm'
   if hash jq 2>/dev/null; then
