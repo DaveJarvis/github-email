@@ -50,6 +50,8 @@ unset ARG_HELP
 # Script starts here
 # -----------------------------------------------------------------------------
 main() {
+	check_requirements
+
   parse_commandline $@
 
   if [ ! -z "$ARG_HELP" ]; then
@@ -92,35 +94,55 @@ main() {
 
   PARAM_GITHUB_TOKEN="access_token=$ARG_GITHUB_TOKEN"
 
+  NAME_FORMAT='.name + " <" + .email + ">"'
+
   heading 'GitHub'
   $CMD "$API_GITHUB/users/$ARG_USERNAME?$PARAM_GITHUB_TOKEN" \
-    | sed -nE 's#^.*"email": "([^"]+)",.*$#\1#p'
+    | jq -r "select( .email != null ) | $NAME_FORMAT"
 
   heading 'npm'
-  if hash jq 2>/dev/null; then
-    $CMD "$API_NPM/-/user/org.couchdb.user:$ARG_USERNAME" | jq -r '.email'
-  else
-    warning "Install jq to scan npm users."
-  fi
+  $CMD "$API_NPM/-/user/org.couchdb.user:$ARG_USERNAME" | jq -r "select( .email != null ) | $NAME_FORMAT"
 
   heading 'Recent Commits'
   $CMD "$API_GITHUB/users/$ARG_USERNAME/events?$PARAM_GITHUB_TOKEN" \
-    | sed -nE 's#^.*"(email)": "([^"]+)",.*$#\2#p' \
-    | sort -u
+    | jq -r ".[] | .payload | select( .commits != null ) | .commits[].author | $NAME_FORMAT" 2>/dev/null \
+    | sort \
+    | uniq
 
   heading 'Recent Repository Activity'
   if [ -z "$ARG_REPOSITORY" ]; then
-    # Get first repository if not specified
+    # Get first repository if no repository is specified
     ARG_REPOSITORY="$($CMD "$API_GITHUB/users/$ARG_USERNAME/repos?type=owner&sort=updated&$PARAM_GITHUB_TOKEN" \
       | sed -nE 's#^.*"name": "([^"]+)",.*$#\1#p' \
       | head -n1)"
   fi
-  
+
   # Find all commits against the repository
   $CMD "$API_GITHUB/repos/$ARG_USERNAME/$ARG_REPOSITORY/commits?$PARAM_GITHUB_TOKEN" \
-    | sed -nE 's#^.*"(email|name)": "([^"]+)",.*$#\2#p'  \
-    | pr -2 -at \
-    | sort -u
+    | jq -r ".[] | .commit | .author | $NAME_FORMAT" 2>/dev/null \
+    | sort \
+    | uniq
+}
+
+# -----------------------------------------------------------------------------
+# Checks for required utilities and exits if not found
+# -----------------------------------------------------------------------------
+check_requirements() {
+  required curl "https://curl.haxx.se/"
+  required jq "https://stedolan.github.io/jq/"
+}
+
+# -----------------------------------------------------------------------------
+# Checks for a required utility and exits if not found
+#
+# $1 - Command to execute
+# $2 - Where to find the command
+# -----------------------------------------------------------------------------
+required() {
+  if ! command -v $1 > /dev/null 2>&1; then
+    warning "Install $1 from $2 before proceeding."
+    exit 1
+  fi
 }
 
 # -----------------------------------------------------------------------------
@@ -167,6 +189,9 @@ parse_commandline() {
   set -- "${POSITIONAL[@]}"
 }
 
+# -----------------------------------------------------------------------------
+# Shows accepted command line parameters
+# -----------------------------------------------------------------------------
 show_usage() {
   printf "Usage: $SCRIPT_NAME -u username " >&2
   printf "[-r repository] [-t token] [-q false]\n" >&2
