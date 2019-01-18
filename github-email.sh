@@ -50,7 +50,7 @@ unset ARG_HELP
 # Script starts here
 # -----------------------------------------------------------------------------
 main() {
-	check_requirements
+  check_requirements
 
   parse_commandline $@
 
