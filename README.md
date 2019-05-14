@@ -30,7 +30,7 @@ Install the script for the local account as follows:
 ```sh
 mkdir -p $HOME/bin
 cd $HOME/bin
-wget https://raw.githubusercontent.com/paulirish/github-email/master/github-email.sh
+wget https://raw.githubusercontent.com/DaveJarvis/github-email/master/github-email.sh
 chmod +x github-email.sh
 ```
 
