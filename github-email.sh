@@ -118,7 +118,7 @@ main() {
   fi
 
   # Find all commits against the repository
-  $CMD "$API_GITHUB/repos/$ARG_USERNAME/$ARG_REPOSITORY/commits?$PARAM_GITHUB_TOKEN" \
+  $CMD -H "Authorization: token $PARAM_GITHUB_TOKEN" "$API_GITHUB/repos/$ARG_USERNAME/$ARG_REPOSITORY/commits" \
     | jq -r ".[] | .commit | .author | $NAME_FORMAT" 2>/dev/null \
     | sort \
     | uniq
